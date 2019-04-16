@@ -36,7 +36,7 @@ const getWeeklyCalenderHTML = (session) => {
     }).then(res => res.text());
 };
 
-const parseCalenderHTML = (htmlParam) => {
+const parseCalenderHTMLToArray = (htmlParam) => {
     const transpose = a => a[0].map((_, c) => a.map(r => r[c]));
     const html = new jsdom.JSDOM(htmlParam);
     const { document } = html.window;
@@ -48,7 +48,6 @@ const parseCalenderHTML = (htmlParam) => {
         const cells = Array.prototype.slice.call(rule.cells);
         // n限目
         return cells.map((cell) => {
-            // const info = cell.firstChild.firstChild.className;
             if (cell.className !== 'item') {
                 // ITEMではない(情報が入り得ない)セル
                 return 0;
@@ -59,22 +58,23 @@ const parseCalenderHTML = (htmlParam) => {
                 return null;
             }
 
-            const [className, place, teacherName] = classDetail.innerHTML.replace(/(\s)\1+|\n|<a.*?>|<\/a>/g, '').split('<br>');
+            const [className, place, teacherName] = classDetail.innerHTML
+                .replace(/(\s)\1+|\n|<a.*?>|<\/a>/g, '')
+                .split('<br>');
             return { className, place, teacherName };
         });
     });
     return transpose(weeklyTable).filter(day => !day.some(cell => cell === 0));
 };
 
-const viewWeeklyData = (data) => {
+const viewWeeklyData = (weeklyData) => {
     const weekJP = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'];
-    data.forEach((oneDay, index) => {
+    weeklyData.forEach((oneDay, index) => {
         console.log(`${weekJP[index]}の履修項目`);
-        oneDay.forEach((data, index) => {
-            if (data) {
-                const {className, teacherName, place} = data;
-                console.log(`  * ${index + 1}限 ${className} \n    ${teacherName}  ${place}`);
-            }
+        oneDay.forEach((data) => {
+            if (!data) return;
+            const { className, teacherName, place } = data;
+            console.log(`  * ${index + 1}限 ${className} \n    ${teacherName}  ${place}`);
         });
     });
 };
@@ -89,13 +89,13 @@ const getCalenderData = async (userData) => {
         });
     console.log('\u001b[36m', 'Getting Calender Data...', '\u001b[0m');
     const calenderHTML = await getWeeklyCalenderHTML(sessionCookies);
-    return parseCalenderHTML(calenderHTML);
+    return parseCalenderHTMLToArray(calenderHTML);
 };
 
 getCalenderData(USER_DATA)
-    .then((calender) => {
-        viewWeeklyData(calender);
+    .then((weeklyData) => {
+        viewWeeklyData(weeklyData);
         console.log('------------------ JSON ------------------');
-        console.log(JSON.stringify(calender, null, 4));
+        console.log(JSON.stringify(weeklyData, null, 4));
         console.log('------------------ END  ------------------');
     });
