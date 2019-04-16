@@ -1,0 +1,24 @@
+{
+  "name": "portal-calender",
+  "version": "1.0.0",
+  "description": "",
+  "main": "getCalenderData.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kznrluk/portal-calender.git"
+  },
+  "author": "Kazunari Sasa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kznrluk/portal-calender/issues"
+  },
+  "homepage": "https://github.com/kznrluk/portal-calender#readme",
+  "dependencies": {
+    "jsdom": "^14.0.0",
+    "node-fetch": "^2.3.0",
+    "puppeteer": "^1.14.0"
+  }
+}
